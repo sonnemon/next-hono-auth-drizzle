@@ -3,7 +3,7 @@ import { handle } from 'hono/vercel';
 import authRouter from '@/server/auth';
 import userRouter from '@/server/user';
 
-export const runtime = 'edge';
+// export const runtime = 'edge';
 
 const app = new Hono({ strict: false })
   .basePath('/api')

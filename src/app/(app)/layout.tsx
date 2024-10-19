@@ -5,7 +5,7 @@ import ReactQueryProvider from '@/providers/react-query-provider';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider>
+    <SessionProvider refetchInterval={1000} refetchOnWindowFocus={false}>
       <ReactQueryProvider>{children}</ReactQueryProvider>
     </SessionProvider>
   );

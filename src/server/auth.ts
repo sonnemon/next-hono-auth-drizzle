@@ -12,37 +12,45 @@ function getAuthConfig(_c: Context): AuthConfig {
       usersTable: users,
       accountsTable: accounts,
       sessionsTable: sessions,
-      verificationTokensTable: verificationTokens
+      verificationTokensTable: verificationTokens,
     }),
     secret: process.env.AUTH_SECRET,
     providers: [
       Credentials({
         credentials: {
           email: {},
-          password: {}
+          password: {},
         },
         authorize: async (credentials) => {
           const user = await db.query.users.findFirst({
-            where: eq(users.email, credentials.email as string)
+            where: eq(users.email, credentials.email as string),
           });
           return user ?? null;
-        }
-      })
+        },
+      }),
     ],
     callbacks: {
       jwt: async ({ token, user, trigger, session }) => {
-        // console.log('--------------------------------');
-        // console.log('token', token);
-        // console.log('user', user);
-        // console.log('trigger', trigger);
-        // console.log('session', session);
-        // console.log('--------------------------------');
+        if (trigger === 'update') {
+          await db
+            .update(users)
+            .set({ name: session.name })
+            .where(eq(users.id, token.userId as string));
+          token = { ...token, ...session };
+        }
+        if (trigger == 'signIn') {
+          token.userId = user.id;
+        }
         return token;
-      }
+      },
+      session: async ({ session, token }) => {
+        session.user.id = token.userId;
+        return session;
+      },
     },
     session: {
-      strategy: 'jwt'
-    }
+      strategy: 'jwt',
+    },
   };
 }
 
