@@ -14,7 +14,7 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from '@/components/ui/card';
 import {
   Form,
@@ -22,33 +22,53 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from '@/components/ui/form';
 import { signIn } from '@hono/auth-js/react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { getErrorMessage } from '@/utils/errors';
 
 const formSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(6)
+  password: z.string().min(6),
 });
 
 export default function SingIn() {
+  const searchParams = useSearchParams();
+  // const [error] = useState(searchParams.get('error'));
+  const router = useRouter();
+  const { toast } = useToast();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
-      password: ''
-    }
+      password: '',
+    },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
     signIn('credentials', {
       email: values.email,
-      password: values.password
+      password: values.password,
     });
   }
+
+  useEffect(() => {
+    const error = searchParams.get('error');
+    if (error) {
+      setTimeout(() => {
+        toast({
+          title: 'Something went wrong',
+          description: getErrorMessage(error),
+          variant: 'destructive',
+        });
+      }, 500);
+      router.replace('/sign-in');
+    }
+  }, []);
 
   return (
     <Card className="w-[350px]">
@@ -96,7 +116,7 @@ export default function SingIn() {
                 Or continue with
               </span>
             </div>
-            <Button variant="outline" className="w-full">
+            <Button type="button" variant="outline" className="w-full">
               <GithubIcon />
               Github
             </Button>

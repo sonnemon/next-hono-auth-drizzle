@@ -13,7 +13,7 @@ const app = new Hono()
     async (c) => {
       const { userId } = c.req.valid('param');
       const user = await db.query.users.findFirst({
-        where: eq(users.id, userId)
+        where: eq(users.id, userId),
       });
       return c.json(user);
     }
@@ -28,8 +28,9 @@ const app = new Hono()
       const { name, email, password } = c.req.valid('json');
 
       const existingUser = await db.query.users.findFirst({
-        where: eq(users.email, email)
+        where: eq(users.email, email),
       });
+      console.log(existingUser);
       if (existingUser) return c.json({ error: 'User already exists' }, 400);
 
       const hashedPassword = await hashPassword(password!);

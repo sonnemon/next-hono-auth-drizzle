@@ -9,7 +9,7 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from '@/components/ui/card';
 import { signOut, useSession } from '@hono/auth-js/react';
 
@@ -19,14 +19,14 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
 const formSchema = z.object({
-  name: z.string().min(3)
+  name: z.string().min(3),
 });
 
 export default function Admin() {
@@ -35,8 +35,8 @@ export default function Admin() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: ''
-    }
+      name: '',
+    },
   });
 
   if (status === 'loading') return <div>Loading...</div>;
@@ -67,7 +67,7 @@ export default function Admin() {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="name" {...field} />
+                      <Input placeholder="New name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
