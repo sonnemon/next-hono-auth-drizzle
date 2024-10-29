@@ -9,10 +9,9 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from '@/components/ui/card';
 import { signOut, useSession } from '@hono/auth-js/react';
-import { BellRing, Check } from 'lucide-react';
 
 import {
   Form,
@@ -20,44 +19,38 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
 const formSchema = z.object({
-  name: z.string().min(3),
+  name: z.string().min(3)
 });
 
 export default function Admin() {
-  // The useSession hook is making frequent requests to keep the session data up-to-date.
-  // This behavior is likely due to the default configuration of the SessionProvider
-  // in the parent layout component. To reduce the number of requests, you can:
-  // 1. Increase the refetchInterval in the SessionProvider
-  // 2. Set refetchOnWindowFocus to false in the SessionProvider
-  // 3. Use the required: true option in useSession to only fetch when necessary
-  const { data: session, status, update } = useSession({ required: true });
+  const { data: session, status, update } = useSession();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-    },
+      name: ''
+    }
   });
 
   if (status === 'loading') return <div>Loading...</div>;
+  if (!session?.user) return <div>Not logged in</div>;
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     update(values);
-    console.log(values);
   }
-  console.log('session', session);
+
   return (
-    <div>
+    <div className="flex justify-center items-center h-screen">
       <Card className={'w-[380px]'}>
         <CardHeader>
-          <CardTitle>{session.user.name}</CardTitle>
+          <CardTitle>Hi {session.user.name}!</CardTitle>
           <CardDescription>{session.user.email}</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">

@@ -13,8 +13,8 @@ export async function middleware(req: NextRequest) {
       Cookie: req.headers.get('cookie') || ''
     }
   });
-
   const session = await sessionRequest.json();
+
   const { nextUrl } = req;
   const isLoggedIn = !!session?.user;
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
